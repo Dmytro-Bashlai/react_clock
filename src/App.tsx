@@ -1,13 +1,13 @@
 import React from 'react';
 import './App.scss';
 
-type Props = {
+type PropsClock = {
   today: Date;
   clockName: string;
   hasClock: boolean;
 };
 
-type State = {
+type StateApp = {
   today: Date;
   hasClock: boolean;
   clockName: string;
@@ -19,16 +19,14 @@ function getRandomName(): string {
   return `Clock-${value}`;
 }
 
-class Clock extends React.PureComponent<Props> {
-  oldName = '';
-
-  componentDidUpdate(prevProps: Readonly<Props>): void {
+class Clock extends React.Component<PropsClock> {
+  componentDidUpdate(prevProps: Readonly<PropsClock>): void {
     const { today, clockName, hasClock } = this.props;
 
     if (prevProps.today !== today) {
       if (hasClock) {
         // eslint-disable-next-line no-console
-        console.log(new Date().toUTCString().slice(-12, -4));
+        console.log(this.props.today.toUTCString().slice(-12, -4));
       }
     }
 
@@ -41,7 +39,7 @@ class Clock extends React.PureComponent<Props> {
   }
 
   render() {
-    const { clockName, hasClock } = this.props;
+    const { today, clockName, hasClock } = this.props;
 
     return (
       hasClock && (
@@ -51,7 +49,7 @@ class Clock extends React.PureComponent<Props> {
           {' time is '}
 
           <span className="Clock__time">
-            {new Date().toUTCString().slice(-12, -4)}
+            {today.toUTCString().slice(-12, -4)}
           </span>
         </div>
       )
@@ -59,8 +57,8 @@ class Clock extends React.PureComponent<Props> {
   }
 }
 
-export class App extends React.Component<{}, State> {
-  state: State = {
+export class App extends React.Component<{}, StateApp> {
+  state: StateApp = {
     today: new Date(),
     clockName: 'Clock-0',
     hasClock: true,
@@ -81,7 +79,7 @@ export class App extends React.Component<{}, State> {
 
   componentDidMount(): void {
     this.timerTimeId = window.setInterval(() => {
-      this.setState({ today: new Date() });
+      this.setState(() => ({ today: new Date() }));
     }, 1000);
 
     this.timerNameId = window.setInterval(() => {
